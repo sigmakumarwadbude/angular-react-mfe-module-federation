@@ -1,0 +1,9 @@
+{
+  "name": "angular-mfe-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm --prefix host install && npm --prefix mf2 install",
+    "start": "npx concurrently \"npm --prefix host start\" \"npm --prefix mf2 start\""
+  }
+}
