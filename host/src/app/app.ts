@@ -1,13 +1,14 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouterLink],
   template: `
-    <h1>Angular 21 Host</h1>
+    <h1>Angular 21 {{ title() }}</h1>
 
     <nav>
+      <a routerLink="/">Home</a> |
       <a routerLink="/angular">Angular MFE</a> |
       <a routerLink="/react">React MFE</a>
     </nav>

@@ -136,6 +136,95 @@ cd mf-react && npm start
 
 ---
 
+## 🚧 Issues Faced & Fixes
+
+These are real issues encountered during the POC development of this microfrontend project. Each includes the problem, root cause, fix, and key lesson learned to help other developers avoid common pitfalls.
+
+### 1. Infinite dev server compile loop
+
+**Problem:** Dev server keeps recompiling endlessly, making development impossible.
+
+**Cause:** Module Federation combined with dev server reload loop due to missing publicHost configuration.
+
+**Fix:** Set `publicHost` in angular.json and disable `liveReload` and `hmr` in dev server options.
+
+```javascript
+// angular.json
+{
+  "projects": {
+    "host": {
+      "architect": {
+        "serve": {
+          "options": {
+            "buildTarget": "host:build:development",
+            "liveReload": false,
+            "hmr": false
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+**Lesson Learned:** Always configure `publicHost` for MF dev servers to prevent reload loops.
+
+### 2. Cannot find module 'mf2/Component'
+
+**Problem:** TypeScript compilation fails with "Cannot find module 'mf2/Component'" errors.
+
+**Cause:** TypeScript cannot resolve federated modules at build time since they're loaded dynamically.
+
+**Fix:** Declare the module in `decl.d.ts` to provide type information.
+
+```typescript
+// src/decl.d.ts
+declare module 'mf2/Component';
+```
+
+**Lesson Learned:** Use declaration files for federated modules to satisfy TypeScript's static analysis.
+
+### 3. RemoteEntry not loading (404 / incorrect path)
+
+**Problem:** Remote app fails to load with 404 errors on `remoteEntry.js`.
+
+**Cause:** Wrong remote URL or port mismatch in webpack remotes configuration.
+
+**Fix:** Validate the `remoteEntry.js` URL and ensure webpack remotes config matches actual dev server ports.
+
+```javascript
+// webpack.config.js
+ModuleFederationPlugin({
+  remotes: {
+    mf2: 'http://localhost:4202/remoteEntry.js'
+  }
+})
+```
+
+**Lesson Learned:** Double-check remote URLs and ports against actual running applications.
+
+### 4. Dev server instability / infinite rebuild
+
+**Problem:** Dev server crashes frequently or rebuilds infinitely without changes.
+
+**Cause:** Missing `publicHost` or using incorrect dev-server builder for Module Federation.
+
+**Fix:** Use `@angular-architects/module-federation:dev-server` builder instead of standard Angular dev server.
+
+```json
+// angular.json
+"serve": {
+  "builder": "@angular-architects/module-federation:dev-server",
+  "options": {
+    "publicHost": "http://localhost:4200"
+  }
+}
+```
+
+**Lesson Learned:** Module Federation requires specialized dev server configuration for stability.
+
+---
+
 ## 🌐 Applications
 
 | App        | Port |
